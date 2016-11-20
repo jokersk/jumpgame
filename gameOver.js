@@ -43,7 +43,7 @@ gameOver.prototype = {
          game.input.onDown.add(this.restart,this)
       },
       restart:function(){
-         // game.state.start("TheGame");
+         game.state.start("TheGame");
       },
       update:function(){
 

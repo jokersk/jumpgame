@@ -45,7 +45,7 @@ TheGame.prototype = {
         game.scale.pageAlignHorizontally = true;
         game.scale.pageAlignVertically = true;
         
-       
+        topPlatform = 660
         // game.world.setBounds(0, 0, 400, 1920);
         this.jumpSound = game.add.audio("jump")
         game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -59,7 +59,7 @@ TheGame.prototype = {
         player.animations.add('right', [1, 2], 8, true);
         player.animations.add('left', [3, 4], 8, true);
         player.animations.play('right');
-        player.body.bounce.setTo(1.1, 0);
+        player.body.bounce.setTo(1, 0);
         player.direction = "right"
         player.yOrig = player.y;
         player.yChange = 0;
@@ -76,6 +76,9 @@ TheGame.prototype = {
         scoreLabel.fixedToCamera = true;
         game.input.onDown.add(this.playerJump,this)
         game.camera.follow(player);
+
+        
+
       },
       addOnePlatform:function(){
          topPlatform -=60
@@ -143,7 +146,7 @@ TheGame.prototype = {
             this.jumpSound.play()
             score +=10;
             scoreLabel.text = "Score: "+score;
-            
+            player.velocity.x *= 1.1
         }
         
         
