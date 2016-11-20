@@ -1,6 +1,10 @@
 var game,
     player,
-    topPlatform = 660
+    topPlatform = 660,
+    haveLeftWall = 0,
+    haveRightWall = 0,
+    score,
+    scoreLabel
 
 var worldBoundHeight = 0;
 var gameOptions = {
@@ -13,6 +17,7 @@ window.onload = function() {
      
      game = new Phaser.Game(gameOptions.gameWidth, gameOptions.gameHeight);
      game.state.add("TheGame", TheGame);
+     game.state.add("gameOver", gameOver);
      game.state.start("TheGame");
 }
 
@@ -32,7 +37,8 @@ TheGame.prototype = {
 
 
       create: function(){
-        
+        game.camera.y = 0;
+         game.world.setBounds(0,0, gameOptions.gameWidth, gameOptions.gameHeight );
 
         game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         
@@ -53,11 +59,21 @@ TheGame.prototype = {
         player.animations.add('right', [1, 2], 8, true);
         player.animations.add('left', [3, 4], 8, true);
         player.animations.play('right');
-        player.body.bounce.setTo(1, 0);
+        player.body.bounce.setTo(1.1, 0);
         player.direction = "right"
         player.yOrig = player.y;
         player.yChange = 0;
 
+        haveLeftWall = Math.random();
+        haveRightWall = Math.random();
+
+
+        score = 0;
+        scoreLabel = game.add.text(gameOptions.gameWidth - 20,10,
+            "Score: "+ score,
+            {font: "25px Arial", fill: "#fff"});
+        scoreLabel.anchor.setTo(1,0)
+        scoreLabel.fixedToCamera = true;
         game.input.onDown.add(this.playerJump,this)
         game.camera.follow(player);
       },
@@ -70,20 +86,34 @@ TheGame.prototype = {
          wallhor.scale.setTo(1,0.5)
          wallhor.width = gameOptions.gameWidth;
          
-         if(Math.random() >= 0.2)
-          {   
-            if(Math.random() >= 0.3)
+        wallhor.checkWorldBounds = true; 
+        wallhor.outOfBoundsKill = true;
+
+            if(Math.random() + haveLeftWall >= 0.6)
             {
                   wall = this.walls.create(0,topPlatform,"wallVer");
                   wall.anchor.setTo(0,1)
+                  
+                  haveLeftWall = 0
             }
-            if(Math.random() >= 0.3)
+             else
+            {
+                   haveLeftWall += 0.1
+            }
+
+            if(Math.random() + haveRightWall >= 0.6)
             {
                   wall = this.walls.create(gameOptions.gameWidth,topPlatform,"wallVer");
                   wall.anchor.setTo(1,1)
+                  
+                  haveRightWall = 0
+            }
+             else 
+            {
+                  haveRightWall+=0.1
             }
               
-          }
+         
           this.walls.setAll("scale.x",0.5);
           this.walls.setAll("height",60);
           this.walls.setAll("body.immovable",true);
@@ -111,6 +141,9 @@ TheGame.prototype = {
             player.body.velocity.y = -400;
             this.addOnePlatform()
             this.jumpSound.play()
+            score +=10;
+            scoreLabel.text = "Score: "+score;
+            
         }
         
         
@@ -128,13 +161,19 @@ TheGame.prototype = {
         }
 
       },
+      playerDie:function(){
+           game.state.start("gameOver", true, false, score);
+      },
       update:function(){
            this.physics.arcade.collide( player, this.platforms );
            this.physics.arcade.collide(player, this.walls , this.changeVelocity);
            game.camera.y = player.y;
            player.yChange = Math.max( player.yChange, Math.abs( player.y - player.yOrig ) );  
           
-           game.world.setBounds(0, -player.yChange, 400, 600 + player.yChange);
+           game.world.setBounds(0, -player.yChange, gameOptions.gameWidth, 600 + player.yChange);
+          if (!player.inWorld) { 
+            this.playerDie();
+          }
       }
 
 }
