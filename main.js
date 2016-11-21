@@ -148,7 +148,7 @@ TheGame.prototype = {
             this.jumpSound.play()
             score +=10;
             scoreLabel.text = "Score: "+score;
-            player.velocity.x *= 1.2
+            player.body.velocity.x *= 1.03
         }
         
         
@@ -179,6 +179,8 @@ TheGame.prototype = {
           if (!player.inWorld) { 
             this.playerDie();
           }
+
+         
       }
 
 }
