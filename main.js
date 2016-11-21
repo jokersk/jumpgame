@@ -10,8 +10,8 @@ var game,
 var worldBoundHeight = 0;
 var gameOptions = {
     gameWidth: 375, 
-    gameHeight: 667,
-    gap:60
+    gameHeight: 660,
+    gap:66
 
 }
 
@@ -120,7 +120,7 @@ TheGame.prototype = {
               
          
           this.walls.setAll("scale.x",0.5);
-          this.walls.setAll("height",60);
+          this.walls.setAll("height",gameOptions.gap);
           this.walls.setAll("body.immovable",true);
 
         
