@@ -1,15 +1,17 @@
 var game,
     player,
-    topPlatform = 660,
+    topPlatform,
     haveLeftWall = 0,
     haveRightWall = 0,
     score,
     scoreLabel
+   
 
 var worldBoundHeight = 0;
 var gameOptions = {
-    gameWidth: 450, 
-    gameHeight: 600
+    gameWidth: 375, 
+    gameHeight: 667,
+    gap:60
 
 }
 
@@ -38,14 +40,14 @@ TheGame.prototype = {
 
       create: function(){
         game.camera.y = 0;
-         game.world.setBounds(0,0, gameOptions.gameWidth, gameOptions.gameHeight );
+        game.world.setBounds(0,0, gameOptions.gameWidth, gameOptions.gameHeight );
 
         game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         
         game.scale.pageAlignHorizontally = true;
         game.scale.pageAlignVertically = true;
         
-        topPlatform = 660
+        topPlatform = gameOptions.gameHeight + gameOptions.gap
         // game.world.setBounds(0, 0, 400, 1920);
         this.jumpSound = game.add.audio("jump")
         game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -81,7 +83,7 @@ TheGame.prototype = {
 
       },
       addOnePlatform:function(){
-         topPlatform -=60
+         topPlatform -=gameOptions.gap
          wallhor = this.platforms.create(0,topPlatform,"wallHor");
          wallhor.body.immovable = true;
          wallhor.anchor.x = 0;
@@ -131,7 +133,7 @@ TheGame.prototype = {
          this.walls = this.add.group();
          this.walls.enableBody = true;
          this.walls.physicsBodyType = Phaser.Physics.ARCADE;         
-        for(var i=600; i>0 ; i-=60)
+        for(var i=gameOptions.gameHeight; i>0 ; i-=gameOptions.gap)
         {
           this.addOnePlatform();
         }
@@ -146,7 +148,7 @@ TheGame.prototype = {
             this.jumpSound.play()
             score +=10;
             scoreLabel.text = "Score: "+score;
-            player.velocity.x *= 1.1
+            player.velocity.x *= 1.2
         }
         
         
@@ -173,7 +175,7 @@ TheGame.prototype = {
            game.camera.y = player.y;
            player.yChange = Math.max( player.yChange, Math.abs( player.y - player.yOrig ) );  
           
-           game.world.setBounds(0, -player.yChange, gameOptions.gameWidth, 600 + player.yChange);
+           game.world.setBounds(0, -player.yChange, gameOptions.gameWidth, gameOptions.gameHeight + player.yChange);
           if (!player.inWorld) { 
             this.playerDie();
           }
